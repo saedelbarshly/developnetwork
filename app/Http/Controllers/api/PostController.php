@@ -18,7 +18,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = auth()->user()->posts()->paginate(10);
+        $posts = auth()->user()->posts()->orderBy('pinned', 'desc')->paginate(10);
         return PostResource::collection($posts)->response()->getData(true);
     }
 

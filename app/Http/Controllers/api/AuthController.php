@@ -63,16 +63,13 @@ class AuthController extends Controller
     public function send(SendCodeRequest $request)
     {
         $user = User::where('phone', $request->phone)->first();
-        // if(is_null($user)){
-        //     return response()->json(['status' => false,'message' => "User Not Found !"]);
-        // }
         $executed = RateLimiter::attempt(
             'send-message:' . $user->id,
             $perMinute = 1,
             function () use ($user) {
                 DB::beginTransaction();
                 try {
-                    $code = rand(10000, 99999);
+                    $code = rand(100000, 999999);
                     $user->code = $code;
                     $user->code_expired_at = Carbon::now()->addSeconds(config('auth.code_timeout'));
                     $user->save();

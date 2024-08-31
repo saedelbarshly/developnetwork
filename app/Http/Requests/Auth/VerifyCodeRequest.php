@@ -23,7 +23,7 @@ class VerifyCodeRequest extends FormRequest
     {
         return [
             'phone' => ['required','exists:users,phone','regex:/^01[0125][0-9]{8}$/'],
-            'code' => ['required', 'numeric', 'digits:5'],
+            'code' => ['required', 'numeric', 'digits:6'],
         ];
     }
 }
