@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Traits\ImageTrait;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PostRequest;
 use App\Http\Resources\PostResource;
 use App\Http\Resources\DeletedPostResource;
 
@@ -17,14 +18,14 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = auth()->user()->posts;
+        $posts = auth()->user()->posts()->paginate(10);
         return PostResource::collection($posts)->response()->getData(true);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(PostRequest $request)
     {
         try {
             $data = $request->except(['_token','cover_image']);
@@ -53,7 +54,7 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Post $post)
+    public function update(PostRequest $request, Post $post)
     {
         try {
             $data = $request->except(['_token','cover_image']);
@@ -84,7 +85,7 @@ class PostController extends Controller
     public function trash()
     {
         try {
-            $posts = auth()->user()?->posts()?->onlyTrashed()->get();
+            $posts = auth()->user()?->posts()?->onlyTrashed()->paginate(10);
             return DeletedPostResource::collection($posts)->response()->getData(true);
         } catch (\Throwable $th) {
             return response()->json(['status' => false,'message' => "Someting went wrong!"]);
@@ -102,14 +103,14 @@ class PostController extends Controller
         }
     }
 
-
     public function pin(Post $post)
     {
         try {
+            Post::where('pinned', 1)->update(['pinned' => 0]);
             $post->update(['pinned' => 1]);
             return response()->json(['status' => true, 'message' => "Post Pinned Successfully ✅"]);
         } catch (\Throwable $th) {
-            return response()->json(['status' => false,'message' => "Someting went wrong!"]);
+            return response()->json(['status' => false, 'message' => "Someting went wrong!"]);
         }
     }
 }

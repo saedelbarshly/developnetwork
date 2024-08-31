@@ -9,33 +9,35 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\SendCodeRequest;
+use App\Http\Requests\Auth\SigninRequest;
 use Illuminate\Support\Facades\RateLimiter;
 use App\Http\Requests\Auth\VerifyCodeRequest;
+use App\Http\Resources\UserResource;
 
 class AuthController extends Controller
 {
-    public function signin(Request $request)
+    public function signin(SigninRequest $request)
     {
         try {
             $user = User::where('phone', $request->phone)->first();
-            if (!$user || !Hash::check($request->password, $user->password)) {
-                return response()->json(['status' => false, 'message' => "User Not Found !"], 400);
+            if (!Hash::check($request->password, $user->password)) {
+                return response()->json(['status' => false, 'message' => "Wrong Password !"]);
             };
 
             if (is_null($user->phone_verified_at)) {
-                return response()->json(['status' => false, 'message' => "You should verify your phone number"], 400);
+                return response()->json(['status' => false, 'message' => "You should verify your phone number"]);
             }
 
             $token = $user->createToken('auth_token')->plainTextToken;
             return response()->json([
+                'data' => new UserResource($user),
                 'token' => $token,
                 'message' => "Login successful",
             ]);
         } catch (\Throwable $th) {
-            return response()->json(['status' => false, 'message' => "Somthing went wrong !"], 400);
+            return response()->json(['status' => false, 'message' => "Somthing went wrong !"]);
         }
     }
 
@@ -48,10 +50,11 @@ class AuthController extends Controller
                 'password' => Hash::make($request->password),
             ]);
             return response()->json([
+                'data' => new UserResource($user),
                 'message' => "Register successful , Go to verfiy phone first !",
             ]);
         } catch (\Throwable $th) {
-            return response()->json(['status' => false, 'message' => "Somthing went wrong !"], 400);
+            return response()->json(['status' => false, 'message' => "Somthing went wrong !"]);
         }
     }
 
@@ -60,9 +63,9 @@ class AuthController extends Controller
     public function send(SendCodeRequest $request)
     {
         $user = User::where('phone', $request->phone)->first();
-        if(is_null($user)){
-            return response()->json(['status' => false,'message' => "User Not Found !"]);
-        }
+        // if(is_null($user)){
+        //     return response()->json(['status' => false,'message' => "User Not Found !"]);
+        // }
         $executed = RateLimiter::attempt(
             'send-message:' . $user->id,
             $perMinute = 1,
@@ -97,9 +100,6 @@ class AuthController extends Controller
     {
         try {
             $user = User::where('phone', $request->phone)->first();
-            if(is_null($user)){
-                return response()->json(['status' => false,'message' => "User Not Found !"]);
-            }
             $now = date('Y-m-d H:i:s');
             if ($user->code != $request->code) {
                 return response()->json(['status' => false, 'message' => "Invalid Code !"]);

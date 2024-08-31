@@ -23,7 +23,7 @@ class RegisterRequest extends FormRequest
     {
         return [
             'name' => ['required','string','max:255'],
-            'phone' => ['required','regex:/^01[0125][0-9]{8}$/'],
+            'phone' => ['required','unique:users,phone','regex:/^01[0125][0-9]{8}$/'],
             'password' => ['required','string','min:8', 'confirmed'],
         ];
     }

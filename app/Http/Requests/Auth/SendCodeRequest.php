@@ -22,7 +22,7 @@ class SendCodeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phone' => ['required','regex:/^01[0125][0-9]{8}$/'],
+            'phone' => ['required','exists:users,phone','regex:/^01[0125][0-9]{8}$/'],
         ];
     }
 }

@@ -15,7 +15,7 @@ class TagController extends Controller
      */
     public function index()
     {
-        $tags = auth()->user()?->tags;
+        $tags = auth()->user()?->tags()->paginate(10);
         return TagResource::collection($tags)->response()->getData(true);
     }
 

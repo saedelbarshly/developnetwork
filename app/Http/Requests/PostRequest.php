@@ -22,9 +22,9 @@ class PostRequest extends FormRequest
     protected function onCreate()
     {
         return [
-            'titel' => ['required','string','max:255'],
+            'title' => ['required','string','max:255'],
             'body' => ['required','string'],
-            'cover_image' => ['required', 'image', 'max:2048'],
+            'cover_image' => ['required', 'image','max:2048','mimes:png,jpg'],
         ];
     }
 
@@ -36,9 +36,9 @@ class PostRequest extends FormRequest
     protected function onUpdate() 
     {
         return [
-            'titel' => ['required','string','max:255'],
+            'title' => ['required','string','max:255'],
             'body' => ['required','string'],
-            'cover_image' => ['nullable', 'image', 'max:2048'],
+            'cover_image' => ['nullable', 'image', 'max:2048','mimes:png,jpg'],
         ];
     }
 
