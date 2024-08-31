@@ -5,7 +5,6 @@ namespace App\Http\Controllers\api;
 use App\Models\Post;
 use App\Traits\ImageTrait;
 use Illuminate\Http\Request;
-use App\Http\Requests\PostRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PostResource;
 
@@ -22,21 +21,9 @@ class PostController extends Controller
     }
 
     /**
-     * Show one resource.
-     */
-    public function show(Post $post)
-    {
-        try {
-            return new PostResource($post);
-        } catch (\Throwable $th) {
-            return response()->json(['status' => false,'message' => "Someting went wrong!"]);
-        }
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
-    public function store(PostRequest $request)
+    public function store(Request $request)
     {
         try {
             $data = $request->except(['_token','cover_image']);
@@ -50,28 +37,22 @@ class PostController extends Controller
         }
     }
 
-    public function pin(Post $post)
+    /**
+     * Display the specified resource.
+     */
+    public function show(Post $post)
     {
         try {
-            $post->update(['pinned' => 1]);
-            return response()->json(['status' => true, 'message' => "Post Pinned Successfully ✅"]);
+            return new PostResource($post);
         } catch (\Throwable $th) {
             return response()->json(['status' => false,'message' => "Someting went wrong!"]);
         }
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
-    public function update(PostRequest $request, Post $post)
+    public function update(Request $request, Post $post)
     {
         try {
             $data = $request->except(['_token','cover_image']);
@@ -109,11 +90,23 @@ class PostController extends Controller
         }
     }
 
-    public function restore(Post $post)
+    public function restore($id)
     {
         try {
+            $post = Post::withTrashed()->find($id);
             $post->restore();
             return response()->json(['status' => true, 'message' => "Post Restored Successfully ✅"]);
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false,'message' => "Someting went wrong!"]);
+        }
+    }
+
+
+    public function pin(Post $post)
+    {
+        try {
+            $post->update(['pinned' => 1]);
+            return response()->json(['status' => true, 'message' => "Post Pinned Successfully ✅"]);
         } catch (\Throwable $th) {
             return response()->json(['status' => false,'message' => "Someting went wrong!"]);
         }

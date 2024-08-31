@@ -13,15 +13,20 @@ Route::get('/user', function (Request $request) {
 
 
 Route::controller(AuthController::class)->group(function (){
-    Route::post('/login', 'login');
-    Route::post('/register', 'register');
-    Route::post('/send', 'send');
-    Route::post('/verify', 'verify');
-    Route::post('/logout', 'logout')->middleware('auth:sanctum');
+    Route::post('/login', 'login')->name('login');
+    Route::post('/register', 'register')->name('register');
+    Route::post('/send', 'send')->name('send');
+    Route::post('/verify', 'verify')->name('verify');
+    Route::post('/logout', 'logout')->name('logout')->middleware('auth:sanctum');
 });
 
 Route::middleware('auth:sanctum')->group(function (){
-    Route::resource('/post',PostController::class);
-    Route::resource('/tag',TagController::class);
-    Route::resource('/state',StateController::class);
+    Route::controller(PostController::class)->group(function (){
+        Route::patch('posts/pin/{post}', 'pin');
+        Route::get('posts/trash', 'trash');
+        Route::post('posts/restore/{id}', 'restore');
+    });
+    Route::apiResources([
+        'posts' => PostController::class,
+    ]);
 });
