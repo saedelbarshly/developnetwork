@@ -7,6 +7,7 @@ use App\Traits\ImageTrait;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PostResource;
+use App\Http\Resources\DeletedPostResource;
 
 class PostController extends Controller
 {
@@ -84,7 +85,7 @@ class PostController extends Controller
     {
         try {
             $posts = auth()->user()?->posts()?->onlyTrashed()->get();
-            return PostResource::collection($posts)->response()->getData(true);
+            return DeletedPostResource::collection($posts)->response()->getData(true);
         } catch (\Throwable $th) {
             return response()->json(['status' => false,'message' => "Someting went wrong!"]);
         }
