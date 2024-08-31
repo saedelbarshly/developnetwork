@@ -15,20 +15,20 @@ class Post extends Model
 
     protected $fillable = ['title', 'body', 'cover_image' , 'pinned' ,'user_id'];
 
-    // protected static function booted()
-    // {
-    //     static::created(function () {
-    //         Cache::forget('stats');
-    //     });
+    protected static function booted()
+    {
+        static::created(function () {
+            Cache::forget('states');
+        });
 
-    //     static::updated(function () {
-    //         Cache::forget('stats');
-    //     });
+        static::updated(function () {
+            Cache::forget('states');
+        });
 
-    //     static::deleted(function () {
-    //         Cache::forget('stats');
-    //     });
-    // }
+        static::deleted(function () {
+            Cache::forget('states');
+        });
+    }
 
     public function user(): BelongsTo
     {

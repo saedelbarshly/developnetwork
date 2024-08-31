@@ -3,9 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\TagController;
-
 use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\PostController;
+use App\Http\Controllers\api\StateController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -29,5 +29,6 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::apiResources([
         'posts' => PostController::class,
         'tags' => TagController::class,
+        'states' => StateController::class,
     ]);
 });
