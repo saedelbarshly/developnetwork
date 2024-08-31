@@ -22,7 +22,8 @@ class TagReqeust extends FormRequest
     protected function onCreate()
     {
         return [
-            'name' => ['required','string','max:255','unique:tags,name']
+            'name' => ['required','string','max:255','unique:tags,name'],
+            'post_id' => ['required','numeric','exists:posts,id']
         ];
     }
 
@@ -34,7 +35,8 @@ class TagReqeust extends FormRequest
     protected function onUpdate() 
     {
         return [
-            'name' => ['required','string','max:255','unique:tags,name'. $this->tag]
+            'name' => ['required','string','max:255','unique:tags,name,'. $this->tag->id],
+            'post_id' => ['required','numeric','exists:posts,id'],
         ];
     }
 

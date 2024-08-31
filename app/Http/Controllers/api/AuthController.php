@@ -17,7 +17,7 @@ use App\Http\Requests\Auth\VerifyCodeRequest;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    public function signin(Request $request)
     {
         try {
             $user = User::where('phone', $request->phone)->first();
@@ -61,7 +61,7 @@ class AuthController extends Controller
     {
         $user = User::where('phone', $request->phone)->first();
         if(is_null($user)){
-            return response()->json(['status' => false,'message' => "User Not Found !"], 400);
+            return response()->json(['status' => false,'message' => "User Not Found !"]);
         }
         $executed = RateLimiter::attempt(
             'send-message:' . $user->id,
@@ -79,15 +79,15 @@ class AuthController extends Controller
                         'phone' => $user->phone,
                         'code' => $code
                     ]);
-                    return response()->json(['status' => true, 'message' => "Code Sent Successfully ✅"], 400);
+                    return response()->json(['status' => true, 'message' => "Code Sent Successfully ✅"]);
                 } catch (\Throwable $th) {
                     DB::rollback();
-                    return response()->json(['status' => false, 'message' => "Somthing went wrong !"], 400);
+                    return response()->json(['status' => false, 'message' => "Somthing went wrong !"]);
                 }
             }
         );
         if (!$executed) {
-            return response()->json(['status' => false, 'message' => "Too many messages sent!"], 400);
+            return response()->json(['status' => false, 'message' => "Too many messages sent!"]);
         }
         return $executed;
     }

@@ -2,10 +2,10 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\api\TagController;
+
 use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\PostController;
-use App\Http\Controllers\api\StateController;
-use App\Http\Controllers\api\TagController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -13,11 +13,11 @@ Route::get('/user', function (Request $request) {
 
 
 Route::controller(AuthController::class)->group(function (){
-    Route::post('/login', 'login')->name('login');
-    Route::post('/register', 'register')->name('register');
-    Route::post('/send', 'send')->name('send');
-    Route::post('/verify', 'verify')->name('verify');
-    Route::post('/logout', 'logout')->name('logout')->middleware('auth:sanctum');
+    Route::post('/signin', 'signin');
+    Route::post('/register', 'register');
+    Route::post('/send', 'send');
+    Route::post('/verify', 'verify');
+    Route::post('/logout', 'logout')->middleware('auth:sanctum');
 });
 
 Route::middleware('auth:sanctum')->group(function (){
@@ -28,5 +28,6 @@ Route::middleware('auth:sanctum')->group(function (){
     });
     Route::apiResources([
         'posts' => PostController::class,
+        'tags' => TagController::class,
     ]);
 });
